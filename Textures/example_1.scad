@@ -1,4 +1,5 @@
 include <BOSL2/std.scad>
-include <triquetra.scad>
+include <Vodicka.scad>
 
-cyl(h = 30, r = 20, $fn = 72, texture = triquetra, tex_reps = [4,1]);
+cyl(h = 20, r = 20, $fn = 72, 
+    texture = image, tex_depth = 1, tex_reps = [4,1], style = min_edge);

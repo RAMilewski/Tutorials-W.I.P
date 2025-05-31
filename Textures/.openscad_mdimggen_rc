@@ -1,0 +1,5 @@
+docs_dir: "../docs"
+image_root: "images"
+file_prefix: "Tutorial-"
+source_files: "/*.md"
+png_animations: true

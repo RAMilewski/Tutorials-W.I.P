@@ -13,7 +13,7 @@ It also allows you to control the roughness used on the surface of some height f
 
 The simplest way to specify a texture map is to give a 2d array of height values that specify the height of the texture on a grid. Values in the height field should generally range from 0 to 1. A zero height in the height field corresponds to the height of the surface and 1 the highest point in the texture above the surface being textured.
 
-```openscad-2d;VPR=[0,0,0];VPD=150;FOV = 50;NoScales
+```openscad
 include <BOSL2/std.scad>
 
 array = [
@@ -34,6 +34,7 @@ array = [
 left(20)  textured_tile(array, [30,30], tex_reps = [1,1]);
 right(20) textured_tile(array, [30,15], tex_reps = [1,1]);
 ```
+![Figure 1](images/Textures_from_Images_1.png)
 
 Notice that while our texture array is square, the aspect ratio of the design on the tile is determined by the height and width of tile, how many times we repeat the design in each direction.  It is not possible to define margins around the design. They must be included in the texture array.
 
