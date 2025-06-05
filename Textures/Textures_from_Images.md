@@ -93,6 +93,17 @@ This means:
 
 For more information on these conversions see the wikipedia entries for [luma](https://en.wikipedia.org/wiki/luma) and [greyscale](https://en.wikipedia.org/wiki/Grayscale).
 
+#### Filters
+
+There are three filters in the Appearance block that let you modify the image from which the data array is created.
+
+##### Blur
+
+The Blur filter applies a gaussian blur to the image.  Blurring the image will make a smoother texture. 
+
+
+
+
 
 
 
