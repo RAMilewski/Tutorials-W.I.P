@@ -51,7 +51,7 @@ The BOSL2 scripts folder contains **img2scad.html** page with a javascript progr
 
 To create a texture array first select an image file by clicking on the **Browse...** button or pasting an image from your clipboard.  A grayscale images scaled to 100 pixels wide will appear to the right of the Appearance block.
 
-### Transformations
+#### Transformations
 
 In the Transformations block you can rescale the image by choosing a new width.  The rescaling will preserve the aspect ratio of your image.
 
@@ -95,13 +95,11 @@ For more information on these conversions see the wikipedia entries for [luma](h
 
 #### Filters
 
-There are three filters in the Appearance block that let you modify the image from which the data array is created.
+Three filters are implemented in the Appearance block.  They are executed in the order shown.  
 
-##### Blur
+The **Gaussian Blur** filter can be used to smooth the surface of textures.
 
-The Blur filter applies a gaussian blur to the image.  Blurring the image will make a smoother texture. 
-
-
+The **Sharpen Filter*
 
 
 
