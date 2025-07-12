@@ -10,7 +10,7 @@ In discussing cubiods and other BOSL2 objects we refer to named [directions](htt
 
 To use BOSL2 library elements in our model we must add this line to the top of our file:
 
-```openscad NORENDER
+```text
 include<BOSL2/std.scad>
 ```
 
@@ -86,8 +86,6 @@ translate([5,0,10 - 0.001])
 cylinder(h=3,r=8);
 ```
 
-BOSL2 has a cyl() object that is to OpenSCAD's cylinder() what cuboid() is to cube().  But we also have xcyl(), ycyl(), and zcyl() which explicitly orient the axis of the cylinder.  
-
 The OpenSCAD Tutorial repeatedly invokes rotate() and translate() to arrange the cylinders in the proper wheel positions:
 
 ```openscad-3d VPR=[41,0,70] VPD=160
@@ -108,8 +106,10 @@ translate([20,15,0])
     cylinder(h=3,r=8,center=true);
 ```
 
-For our BOSL2 car we'll use a y-axis aligned [ycyl()](https://github.com/BelfrySCAD/BOSL2/wiki/shapes3d.scad#module-ycyl) for the wheel, and rather than duplicating the code 4 times, we'll make use of
-a module called [grid_copies()](https://github.com/BelfrySCAD/BOSL2/wiki/distributors.scad#functionmodule-grid_copies) from BOSL2's collection of [distributor](https://github.com/BelfrySCAD/BOSL2/wiki/distributors.scad) modules.
+BOSL2 has a cyl() object that is to OpenSCAD's cylinder() what cuboid() is to cube().  Unlike OpenSCAD's cylinder(), we can change the orientation of the cyl() object (and all other attachable BOSL2 objects) with the '"orient" argument.
+
+For our BOSL2 car we'll use a y-axis oriented [cyl()](https://github.com/BelfrySCAD/BOSL2/wiki/shapes3d.scad#module-cyl) for the wheel, and rather than duplicating the code 4 times, we'll make use of
+a module called [grid_copies()](https://github.com/BelfrySCAD/BOSL2/wiki/distributors.scad#functionmodule-grid_copies) from BOSL2's collection of [distributors](https://github.com/BelfrySCAD/BOSL2/wiki/distributors.scad).
 
 Here we're using two argumets to grid_copies(), *n*__ given as [ROWS,COLUMNS], and *spacing*, the [XY] size over which to spread the copies.
 
@@ -117,16 +117,16 @@ Here we're using two argumets to grid_copies(), *n*__ given as [ROWS,COLUMNS], a
 include<BOSL2/std.scad>
 cuboid([60,20,10])
     position(TOP) right(5) cuboid([30,20,10], anchor = BOT);
-grid_copies(n=[2,2], spacing = [40,30]) ycyl(h=3, r=8);
+grid_copies(n=[2,2], spacing = [40,30]) cyl(h=3, r=8, orient = BACK);
 ```
 
-Our car is still missing axles to connect the wheels to the body.  The OpenSCAD tutorial leaves these as an exercise for the reader, but we'll use them to introduce another distributor, [xcopies](https://github.com/BelfrySCAD/BOSL2/wiki/distributors.scad#functionmodule-xcopies) that lets us place copies of an object along the x-axis.
+Our car is still missing axles to connect the wheels to the body.  The OpenSCAD tutorial leaves these as an exercise for the reader, but we'll use them to introduce two new things.  First we'll use ycyl(), this is like cyl() with orient=BACK, BOSL2 also has xcyl() and zcyl(). (Although zcyl() and cyl() produce cylinders with the same orientation). The second new thing is another distributor, [xcopies](https://github.com/BelfrySCAD/BOSL2/wiki/distributors.scad#functionmodule-xcopies) that lets us place copies of an object along the x-axis.
 
 ```openscad-3d  VPR=[41,0,70] VPD=160
 include<BOSL2/std.scad>
 cuboid([60,20,10])
     position(TOP) right(5) cuboid([30,20,10], anchor = BOT);
-grid_copies(n=[2,2], spacing = [40,30]) ycyl(h=3, r=8);
+grid_copies(n=[2,2], spacing = [40,30]) cyl(h=3, r=8, orient = BACK);
 xcopies(n=2, spacing = 40) ycyl(h=30, r = 2);
 ```
 
@@ -139,7 +139,7 @@ $fa = 1;
 $fs = 0.4;
 cuboid([60,20,10])
     position(TOP) right(5) cuboid([30,20,10], anchor = BOT);
-grid_copies(n=[2,2], spacing = [40,30]) ycyl(h=3, r=8);
+grid_copies(n=[2,2], spacing = [40,30]) cyl(h=3, r=8, orient = BACK);
 xcopies(n=2, spacing = 40) ycyl(h=30, r = 2);
 ```
 
@@ -161,9 +161,9 @@ Alternatively you can override both $fa and $fs by using $fn to directly specify
 $fn = 72;
 ```
 
-## Guilding the Lilly
+## Beyond OpenSCAD
 
-Let's depart from the OpenSCAD tutorial for a while and embellish our model and illustrate how BOSL2 objects differ from their OpenSCAD counterparts.
+Let's depart from the OpenSCAD tutorial for a while and add to our model in ways that illustrate how BOSL2 objects differ from their OpenSCAD counterparts.
 
 We can start with the tires. BOSL2's cyl() support rounding and chamfering of the ends of the cylinder.
 Let's widen the tires from 3 to 4 and round the edges by 0.5.
@@ -174,43 +174,58 @@ $fa = 1;
 $fs = 0.4;
 cuboid([60,20,10])
     position(TOP) right(5) cuboid([30,20,10], anchor = BOT);
-grid_copies(n=[2,2], spacing = [40,30]) ycyl(h=4, r=8, rounding = 0.5);
+grid_copies(n=[2,2], spacing = [40,30]) cyl(h=4, r=8, orient=BACK, rounding = 0.5);
 xcopies(n=2, spacing = 40) ycyl(h=30, r = 2);
 ```
 
-Let's make our car a bit more streamlined by changing the top cuboid() to a BOSL2 shape called a [prismoid()](https://github.com/BelfrySCAD/BOSL2/wiki/shapes3d.scad#functionmodule-prismoid). The prismoid() lets us specify different sizes for the top and bottom as well as being able to shift the location of top in X or Y.
+Those look more like tires, but real tires have tread.  Let's make them more realistic.  We do that by adding texture to the cyl(). There are more than dozen [built-in textures](https://github.com/BelfrySCAD/BOSL2/wiki/skin.scad#section-texturing) in BOLS2, and ways to [add your own](https://github.com/BelfrySCAD/BOSL2/wiki/skin.scad#section-introduction-to-texturing).
 
-```openscad-3d  VPR=[60,0,10] VPD=160
+```openscad-3d  VPR=[41,0,70] VPD=160
 include<BOSL2/std.scad>
 $fa = 1;
 $fs = 0.4;
 cuboid([60,20,10])
-    position(TOP) right(5) prismoid(size1 = [40,20], size2 = [20,20], shift = [5,0], h = 10, anchor = BOT);
-grid_copies(n=[2,2], spacing = [40,30]) ycyl(h=4, r=8, rounding = 0.5);
+    position(TOP) right(5) cuboid([30,20,10], anchor = BOT);
+grid_copies(n=[2,2], spacing = [40,30]) 
+    cyl(h=4, r=8, rounding = 0.5, orient = BACK, texture= "cubes", tex_reps = [30,4], tex_depth = 0.5);
 xcopies(n=2, spacing = 40) ycyl(h=30, r = 2);
 ```
 
-The prismoid() also let's us round the vertical-ish edges:
-
-```openscad-3d  VPR=[60,0,10] VPD=160
-include<BOSL2/std.scad>
-$fa = 1;
-$fs = 0.4;
-cuboid([60,20,10])
-    position(TOP) right(5) prismoid(size1 = [40,20], size2 = [20,20], shift = [5,0], h = 10, rounding = 3, anchor = BOT);
-grid_copies(n=[2,2], spacing = [40,30]) ycyl(h=4, r=8, rounding = 0.5);
-xcopies(n=2, spacing = 40) ycyl(h=30, r = 2);
-```
-
-As with the prismoid, the cuboid lets us round edges.  We'll specify a rounding radius of 5 and a list of the edges we want to round.  In this case we'll round the edges on the left and right ends of the cuboid.  For a detailed discussion of edge rounding of cube-like objects, see the tutorial [Rounding the Cube](https://github.com/BelfrySCAD/BOSL2/wiki/Tutorial-Rounding_the_Cube).
+Let's make our car a bit more streamlined by rounding some of the edges of the bottom cuboid.  We'll specify a rounding radius of 5 and a list of the edges we want to round.  In this case we'll round the edges on the left and right ends of the cuboid.  For a detailed discussion of edge rounding of cube-like objects, see the tutorial [Rounding the Cube](https://github.com/BelfrySCAD/BOSL2/wiki/Tutorial-Rounding_the_Cube).
 
 ```openscad
 include<BOSL2/std.scad>
 $fa = 1;
 $fs = 0.4;
 cuboid([60,20,10], rounding = 5, edges = [LEFT,RIGHT])
-    position(TOP) right(5) prismoid(size1 = [40,20], size2 = [20,20], shift = [5,0], h = 10, rounding = 3, anchor = BOT);
-grid_copies(n=[2,2], spacing = [40,30]) ycyl(h=4, r=8, rounding = 0.5);
+     position(TOP) right(5) cuboid([30,20,10], anchor = BOT);
+grid_copies(n=[2,2], spacing = [40,30]) 
+    cyl(h=4, r=8, rounding = 0.5, orient = BACK, texture= "cubes", tex_reps = [30,4], tex_depth = 0.5);
 xcopies(n=2, spacing = 40) ycyl(h=30, r = 2);
 ```
 
+We can make our model look less like an old Model-T Ford by changing the top cuboid() to a BOSL2 shape called a [prismoid()](https://github.com/BelfrySCAD/BOSL2/wiki/shapes3d.scad#functionmodule-prismoid). The prismoid() is another of BOSL2's cube-like objects. It lets us specify different sizes for the top and bottom as well as being able to shift the location of the top relative to the bottom.
+
+```openscad-3d  VPR=[60,0,10] VPD=160
+include<BOSL2/std.scad>
+$fa = 1;
+$fs = 0.4;
+cuboid([60,20,10], rounding = 5, edges = [LEFT,RIGHT])
+    position(TOP) right(5) prismoid(size1 = [40,20], size2 = [20,20], shift = [5,0], h = 10, anchor = BOT);
+grid_copies(n=[2,2], spacing = [40,30]) 
+    cyl(h=4, r=8, rounding = 0.5, orient = BACK, texture= "cubes", tex_reps = [30,4], tex_depth = 0.5);
+xcopies(n=2, spacing = 40) ycyl(h=30, r = 2);
+```
+
+The prismoid() also lets us round the vertical-ish edges:
+
+```openscad-3d  VPR=[60,0,10] VPD=160
+include<BOSL2/std.scad>
+$fa = 1;
+$fs = 0.4;
+cuboid([60,20,10], rounding = 5, edges = [LEFT,RIGHT])
+    position(TOP) right(5) prismoid(size1 = [40,20], size2 = [20,20], shift = [5,0], h = 10, rounding = 3, anchor = BOT);
+grid_copies(n=[2,2], spacing = [40,30]) 
+    cyl(h=4, r=8, rounding = 0.5, orient = BACK, texture= "cubes", tex_reps = [30,4], tex_depth = 0.5);
+xcopies(n=2, spacing = 40) ycyl(h=30, r = 2);
+```
